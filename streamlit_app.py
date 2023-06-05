@@ -140,7 +140,7 @@ if menu == 'Exploratory Data Analysis':
  t  rucks, buses, and off-road vehicles, due to higher greenhouse gas emissions.''')
 
 elif menu == 'Predict Price':
-    Execute SELECT DISTINCT query to fetch car_models types
+    #Execute SELECT DISTINCT query to fetch car_models types
     cursor = conn.cursor()
     cursor.execute("SELECT CONCAT('''', MODEL, '''', ':', ROW_NUMBER() OVER (ORDER BY MODEL) - 1) AS MODEL FROM GENERIC_CAR_ATTRIBUTES;")
     car_models = [row[0] for row in cursor.fetchall()]
