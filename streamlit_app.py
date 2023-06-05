@@ -10,31 +10,17 @@ import random
 # import data file csv
 df = pd.read_csv('merc.csv')
 # set page title
-st.set_page_config('Mercedes Price Prediction App')
+st.set_page_config('Dealer Cost by car')
 
 st.title('Predict Mercedes Car Prices (in Euros)')
-social_acc = ['About', 'Kaggle', 'Medium', 'LinkedIn']
-social_acc_nav = st.sidebar.selectbox('About', social_acc)
-if social_acc_nav == 'About':
-    st.sidebar.markdown("<h2 style='text-align: center;'> Sarvesh Kishor Talele</h2> ", unsafe_allow_html=True)
-    st.sidebar.markdown('''---''')
-    st.sidebar.markdown('''
-    • Data Analytics (Python/SQL/Tableau) \n 
-    • Industrial Robotics (KUKA Robots) \n 
-    • Interned as a Data Engineer''')
-    st.sidebar.markdown("[ Visit Google Scholar Account](https://scholar.google.com/citations?user=-4Vyig8AAAAJ&hl=en)")
-
-elif social_acc_nav == 'Kaggle':
-    st.sidebar.image('kaggle.jpg')
-    st.sidebar.markdown("[Kaggle](https://www.kaggle.com/sarveshtalele)")
-
-elif social_acc_nav == 'Medium':
-    st.sidebar.image('medium.jpg')
-    st.sidebar.markdown("[Click to read my blogs](https://wyverical.medium.com/)")
-
-elif social_acc_nav == 'LinkedIn':
-    st.sidebar.image('linkedin.jpg')
-    st.sidebar.markdown("[Visit LinkedIn account](https://www.linkedin.com/in/sarvesh-talele-320356196/)")
+con = sf.connect(
+    user=st.secrets["snowflake"]["user"],
+    password=st.secrets["snowflake"]["password"],
+    account=st.secrets["snowflake"]["account"],
+    warehouse=st.secrets["snowflake"]["warehouse"],
+    database=st.secrets["snowflake"]["database"],
+    schema=st.secrets["snowflake"]["schema"]
+)
 
 menu_list = ['Exploratory Data Analysis', "Predict Price"]
 menu = st.radio("Menu", menu_list)
@@ -154,13 +140,47 @@ if menu == 'Exploratory Data Analysis':
  t  rucks, buses, and off-road vehicles, due to higher greenhouse gas emissions.''')
 
 elif menu == 'Predict Price':
+    Execute SELECT DISTINCT query to fetch car_models types
+    cursor = conn.cursor()
+    cursor.execute("SELECT CONCAT('''', MODEL, '''', ':', ROW_NUMBER() OVER (ORDER BY MODEL) - 1) AS MODEL FROM GENERIC_CAR_ATTRIBUTES;")
+    car_models = [row[0] for row in cursor.fetchall()]
 
-    model_dic = {'a class': 0, 'b class': 1, 'c class': 2, 'cl class': 3, 'cla class': 4, 'clc class': 5, 'clk': 6,
-                 'cls class': 7, 'e class': 8, 'g class': 9, 'gl class': 10, 'gla class': 11, 'glb class': 12,
-                 'glc class': 13, 'gle class': 14, 'gls class': 15, 'm class': 16, 'r class': 17, 's class': 18,
-                 'sl class': 19, 'slk': 20, 'v class': 21, 'x-class': 22}
+    # Close Snowflake connection
+    cursor.close()
+    conn.close()
+
+    # Mapping car models to indices
+    model_dic = {model: index for index, model in enumerate(car_models)}
+    
+    # Execute SELECT DISTINCT query to fetch fuel_system types
+    cursor = conn.cursor()
+    cursor.execute("SELECT CONCAT('''', fuel_system, '''', ':', ROW_NUMBER() OVER (ORDER BY fuel_system) - 1) AS fuel_system FROM GENERIC_CAR_ATTRIBUTES;")
+    fuel_system_types = [row[0] for row in cursor.fetchall()]
+
+    # Close Snowflake connection
+    cursor.close()
+    conn.close()
+
+    # Mapping transmission types to indices
+    fuel_system_dic = {transmission: index for index, transmission in enumerate(transmission_types)}
     transmission_dic = {'automatic': 0, 'manual': 1, 'other': 2, 'semi-auto': 3}
-    fuel_dic = {'diesel': 0, 'hybrid': 1, 'other': 2, 'petrol': 3}
+    
+    # Execute SELECT DISTINCT query to fetch fuel types
+    cursor = conn.cursor()
+    cursor.execute("SELECT CONCAT('''', FUEL_TYPE, '''', ':', ROW_NUMBER() OVER (ORDER BY fuel_type) - 1) AS FUEL_TYPE FROM GENERIC_CAR_ATTRIBUTES;")
+    fuel_types = [row[0] for row in cursor.fetchall()]
+
+    # Close Snowflake connection
+    cursor.close()
+    conn.close()
+
+    # Mapping fuel types to indices
+    fuel_dic = {fuel_type: index for index, fuel_type in enumerate(fuel_types)}
+
+    # Fuel type selection
+    fuel_choice = st.selectbox(label='Select the Fuel type', options=fuel_types)
+    fuel_index = fuel_dic[fuel_choice]
+    
 
     model_list = [
         "a class", "b class", "c class", "cl class", "cla class", "clc class", "clk", "cls class", "e class", "g class",
