@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
+import pyarrow
 import snowflake.connector as sf
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
