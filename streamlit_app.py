@@ -164,8 +164,7 @@ elif menu == 'Predict Price':
     
 
     # Mapping transmission types to indices
-    fuel_system_dic = {transmission: index for index, transmission in enumerate(transmission_types)}
-    transmission_dic = {'automatic': 0, 'manual': 1, 'other': 2, 'semi-auto': 3}
+    fuel_system_dic = {fuel_system: row_number for fuel_system, row_number in fuel_system_types}
     
     # Execute SELECT DISTINCT query to fetch fuel types
     cursor = conn.cursor()
