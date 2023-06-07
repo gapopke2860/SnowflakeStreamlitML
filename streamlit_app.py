@@ -15,7 +15,7 @@ df = pd.read_csv('merc.csv')
 st.set_page_config('Dealer Cost by car')
 
 st.title('Predict Mercedes Car Prices (in Euros)')
-con = sf.connect(
+conn = sf.connect(
     user=st.secrets["snowflake"]["user"],
     password=st.secrets["snowflake"]["password"],
     account=st.secrets["snowflake"]["account"],
