@@ -156,7 +156,7 @@ elif menu == 'Predict Price':
     
     # Execute SELECT DISTINCT query to fetch fuel_system types
     cursor = conn.cursor()
-    cursor.execute("SELECT CONCAT('''', fuel_system, '''', ':', ROW_NUMBER() OVER (ORDER BY fuel_system) - 1) AS fuel_system FROM GENERIC_CAR_ATTRIBUTES;")
+    cursor.execute("SELECT DISTINCT fuel_system FROM GENERIC_CAR_ATTRIBUTES;")
     fuel_system_types = [row[0] for row in cursor.fetchall()]
 
     # Close Snowflake connection
@@ -164,7 +164,7 @@ elif menu == 'Predict Price':
     
 
     # Mapping transmission types to indices
-    fuel_system_dic = {fuel_system: row_number for fuel_system, row_number in fuel_system_types}
+    fuel_system_dic = {fuel_system: index for index, fuel_system in enumerate(fuel_system_types)}
     
     # Execute SELECT DISTINCT query to fetch fuel types
     cursor = conn.cursor()
