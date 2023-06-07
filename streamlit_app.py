@@ -149,7 +149,7 @@ elif menu == 'Predict Price':
 
     # Close Snowflake connection
     cursor.close()
-    conn.close()
+    
 
     # Mapping car models to indices
     model_dic = {model: index for index, model in enumerate(car_models)}
@@ -161,7 +161,7 @@ elif menu == 'Predict Price':
 
     # Close Snowflake connection
     cursor.close()
-    conn.close()
+    
 
     # Mapping transmission types to indices
     fuel_system_dic = {transmission: index for index, transmission in enumerate(transmission_types)}
